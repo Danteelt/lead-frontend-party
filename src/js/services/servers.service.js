@@ -3,28 +3,24 @@ class ServersService {
 		this.$http = $http;
 		this.$localStorage = $localStorage;
 		this.AuthService = AuthService;
-
 		this.serversEndpoint = config.serversUrl;
 		this.servers = [];
 	}
 
-	getServersList(token, callback) {
-		this.$http({
-			method: 'GET',
-			url: this.serversEndpoint,
-			headers: {
-				'Authorization': token
-			}
-		})
-		.then(function (e) {
-			callback({
-				content: true,
-				list: e.data
-			});
-		}, function () {
-			callback({
-				content: false
+	getServersList(token) {
+		return new Promise((resolve, reject)=> {
+			this.$http({
+				method: 'GET',
+				url: this.serversEndpoint,
+				headers: {
+					'Authorization': token
+				}
 			})
+			.then(function (e) {
+				resolve(e.data);
+			}, function () {
+				reject()
+			});
 		});
 	}
 }

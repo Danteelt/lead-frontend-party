@@ -1,31 +1,31 @@
-import angular from 'angular';
-
 export default class ServersController {
-	constructor($scope, $localStorage, $location, ServersService) {
+	constructor($scope, $localStorage, $location, ServersService, $log, AuthService) {
 		this.$scope = $scope;
 		this.$localStorage = $localStorage;
 		this.$location = $location;
 		this.ServersService = ServersService;
-		this.checkToken();
+		this.AuthService = AuthService;
+		this.$log = $log;
 		this.list = [];
+		this.getList();
 	}
-	
-	checkToken() {
-		let _this = this;
-		this.token = this.$localStorage['testio-token'];
-		if (angular.isUndefined(this.token) || this.token == '' || this.token == null) {
-			this.$location.path('/');
-		} else {
-			this.ServersService.getServersList(this.token, function (data) {
-				if (data.content) {
-					_this.list = data.list;
-				} else {
-					_this.logout();
-				}
+
+	getList() {
+		this.AuthService.checkToken().then((token)=> {
+			this.ServersService.getServersList(token).then((data) => {
+				this.list = data;
+				this.$scope.$apply();
+			})
+			.catch(()=>{
+				this.AuthService.logout();
+				this.$location.path('/');
 			});
-		}
+		})
+		.catch(()=> {
+			this.$log.warn('No token found.');
+		});
 	}
 }
 
-ServersController.$inject = ['$scope', '$localStorage', '$location', 'ServersService'];
+ServersController.$inject = ['$scope', '$localStorage', '$location', 'ServersService', '$log', 'AuthService'];
 

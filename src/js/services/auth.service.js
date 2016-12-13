@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 class AuthService {
 	constructor($http, $localStorage, $location, config) {
 		this.$location = $location;
@@ -6,29 +8,39 @@ class AuthService {
 		this.$http = $http;
 	}
 
-	login(user, callback) {
-		let _this = this;
-		this.$http({
-			method: 'POST',
-			url: this.endpoint,
-			data: angular.toJson(user),
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			}
-		})
-		.then(function (e) {
-			_this.$location.path('/servers');
-			_this.$localStorage['testio-token'] = e.data.token;
-		}, function (e) {
-			callback(e.status, e.data);
+	login(user) {
+		return new Promise((resolve, reject) => {
+			this.$http({
+				method: 'POST',
+				url: this.endpoint,
+				data: angular.toJson(user),
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8'
+				}
+			})
+			.then((e) => {
+				this.$location.path('/servers');
+				this.$localStorage['testio-token'] = e.data.token;
+			}, () => {
+				reject();
+			});
 		});
 	}
 
-	logout(callback) {
+	logout() {
 		this.$localStorage['testio-token'] = '';
-		if (callback) {
-			callback();
-		}
+	}
+
+	checkToken() {
+		return new Promise((resolve, reject)=> {
+			this.token = this.$localStorage['testio-token'];
+			if (angular.isUndefined(this.token) || this.token == '' || this.token == null) {
+				this.$location.path('/');
+				reject();
+			} else {
+				resolve(this.token);
+			}
+		});
 	}
 
 }

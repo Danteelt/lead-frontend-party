@@ -9,22 +9,17 @@ function logoutButton() {
 }
 
 class LogoutButtonController {
-	constructor(AuthService, $location, $log) {
+	constructor(AuthService, $location) {
 		this.AuthService = AuthService;
 		this.$location = $location;
-
-		$log.log(AuthService);
-		$log.log('asdasd');
 	}
 
 	logout() {
-		let _this = this;
-		this.AuthService.logout(function () {
-			_this.$location.path('/');
-		});
+		this.AuthService.logout();
+		this.$location.path('/');
 	}
 }
 
-LogoutButtonController.$inject = ['AuthService', '$location', '$log'];
+LogoutButtonController.$inject = ['AuthService', '$location'];
 
 export default logoutButton;
