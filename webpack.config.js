@@ -47,7 +47,9 @@ module.exports = {
 		new webpack.HotModuleReplacementPlugin({
 			reload: true
 		}),
-		new webpack.optimize.UglifyJsPlugin()
+		new webpack.optimize.UglifyJsPlugin({
+			mangle: false
+		})
 	],
 	devServer: {
 		hot: true
