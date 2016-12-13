@@ -20,7 +20,7 @@ class AuthService {
 			})
 			.then((e) => {
 				this.$location.path('/servers');
-				this.$localStorage['testio-token'] = e.data.token;
+				this.setToken(e.data.token);
 			}, () => {
 				reject();
 			});
@@ -33,7 +33,7 @@ class AuthService {
 
 	checkToken() {
 		return new Promise((resolve, reject)=> {
-			this.token = this.$localStorage['testio-token'];
+			this.token = this.receiveToken();
 			if (angular.isUndefined(this.token) || this.token == '' || this.token == null) {
 				this.$location.path('/');
 				reject();
@@ -41,6 +41,14 @@ class AuthService {
 				resolve(this.token);
 			}
 		});
+	}
+
+	receiveToken() {
+		return this.$localStorage['testio-token'];
+	}
+
+	setToken(token) {
+		this.$localStorage['testio-token'] = token;
 	}
 
 }
